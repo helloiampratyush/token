@@ -1,0 +1,41 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/erc20.sol": {
+      "content": "//SPDX-License-Identifier:MIT\npragma solidity ^0.5.7;\n\nimport \"./librarysafeMath.sol\";\n\ncontract ERC20 {\n  function totalSupply() public view returns (uint _totalSupply);\n\n  function balanceOf(address _owner) public view returns (uint balance);\n\n  function transfer(address _to, uint _value) public returns (bool success);\n\n  function transferFrom(\n    address _from,\n    address _to,\n    uint _value\n  ) public returns (bool success);\n\n  function approve(address _spender, uint _value) public returns (bool success);\n\n  function allowance(\n    address _owner,\n    address _spender\n  ) public view returns (uint remaining);\n\n  // Transfer Event triggered , when tokens are transferred\n  event Transfer(address indexed _from, address indexed _to, uint _value);\n  // Triggered on any successful call to approve\n  event Approval(\n    address indexed _owner,\n    address indexed _spender,\n    uint256 _value\n  );\n}\n"
+    },
+    "contracts/librarysafeMath.sol": {
+      "content": "//SPDX-License-Identifier:MIT\npragma solidity ^0.5.7;\n\nlibrary safeMath {\n  function add(uint a, uint b) internal pure returns (uint) {\n    uint c = a + b;\n    require(c > a);\n    return c;\n  }\n\n  function sub(uint a, uint b) internal pure returns (uint) {\n    require(b <= a);\n    uint c = a - b;\n    return c;\n  }\n\n  function mul(uint a, uint b) internal pure returns (uint) {\n    if (a == 0) {\n      return 0;\n    }\n    uint c = a * b;\n    require(c / a == b);\n    return c;\n  }\n\n  function div(uint a, uint b) internal pure returns (uint) {\n    require(b > 0);\n    uint c = a / b;\n    return c;\n  }\n}\n"
+    },
+    "contracts/ethcoin.sol": {
+      "content": "//SPDX-License-Identifier:MIT\npragma solidity ^0.5.7;\n\nimport \"./librarysafeMath.sol\";\nimport \"./erc20.sol\";\n\ncontract cryptoCurrency is ERC20 {\n  using safeMath for uint;\n  address payable public owner;\n  mapping(address => uint) _balanceOf;\n  mapping(address => mapping(address => uint)) allowd;\n  string public name = \"disgust\";\n  string public symbol = \"DGT\";\n  uint public decimals = 10;\n  uint public _totalSupply = 18000000000000;\n\n  constructor() public {\n    owner = msg.sender;\n    _balanceOf[owner] = _totalSupply;\n  }\n\n  modifier onlyOwner() {\n    if (msg.sender != owner) {\n      revert();\n    }\n    _;\n  }\n\n  function getOwner() public view returns (address) {\n    return owner;\n  }\n\n  function totalSupply() public view returns (uint totalSupply1) {\n    return _totalSupply.sub(_balanceOf[address(0)]);\n  }\n\n  function balanceOf(address _owner) public view returns (uint balance) {\n    return _balanceOf[_owner];\n  }\n\n  function transfer(address _to, uint _value) public returns (bool success) {\n    _balanceOf[_to] = _balanceOf[_to].add(_value);\n    _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n  }\n\n  function transferFrom(\n    address _from,\n    address _to,\n    uint _value\n  ) public returns (bool success) {\n    _balanceOf[_from] = _balanceOf[_from].sub(_value);\n    _balanceOf[_to] = _balanceOf[_to].add(_value);\n    allowd[owner][_from] = allowd[owner][_from].sub(_value);\n    emit Transfer(_from, _to, _value);\n    return true;\n  }\n\n  function approve(\n    address _spender,\n    uint _value\n  ) public returns (bool success) {\n    allowd[owner][_spender] = _value;\n    emit Approval(owner, _spender, _value);\n    return true;\n  }\n\n  function allowance(\n    address _owner,\n    address _spender\n  ) public view returns (uint remaining) {\n    return allowd[_owner][_spender];\n  }\n\n  function extraPay() external payable {\n    revert();\n  }\n\n  function specialOwner(\n    address tokenAddress,\n    uint _value\n  ) public onlyOwner returns (bool success) {\n    return ERC20(tokenAddress).transfer(owner, _value);\n  }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
