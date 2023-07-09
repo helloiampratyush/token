@@ -52,7 +52,7 @@ contract cryptoCurrency is ERC20 {
   ) public returns (bool success) {
     _balanceOf[_from] = _balanceOf[_from].sub(_value);
     _balanceOf[_to] = _balanceOf[_to].add(_value);
-    allowd[owner][_from] = allowd[owner][_from].sub(_value);
+    allowd[msg.sender][_from] = allowd[owner][_from].sub(_value);
     emit Transfer(_from, _to, _value);
     return true;
   }
@@ -60,9 +60,9 @@ contract cryptoCurrency is ERC20 {
   function approve(
     address _spender,
     uint _value
-  ) public returns (bool success) {
-    allowd[owner][_spender] = _value;
-    emit Approval(owner, _spender, _value);
+  ) public onlyOwner returns (bool success) {
+    allowd[msg.sender][_spender] = _value;
+    emit Approval(msg.sender, _spender, _value);
     return true;
   }
 
