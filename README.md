@@ -18,7 +18,7 @@ $ sudo apt install node -g
 ```
 * for windows
 ```
-you can just search on ggogle and download it manually
+you can just search on gogle and download it manually
 ```
 you can install npm by just replacin node to npm ..................
 
